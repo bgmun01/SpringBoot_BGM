@@ -2,6 +2,7 @@ package com.example.member.controller;
 
 import com.example.member.dto.MemberDTO;
 import com.example.member.service.MemberService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,24 @@ public class MemberController {
         // @Controller 같은 어노테이션은 스프링이 관리하는 객체로 선언한다 인데
         // 이걸 사용할 때는 주입? 을 사용한다.객체를 주입받는다. 생성자 주입?
         memberService.save(memberDTO);
-        return "index";
+        return "login";
+    }
+
+    @GetMapping("/member/login")
+    public String loginForm() {
+        return "login";
+    }
+
+    @PostMapping("/member/login")
+    public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session) {
+        MemberDTO loginResult = memberService.login(memberDTO);
+        if (loginResult != null) {
+            // login 성공
+            session.setAttribute("loginEmail", loginResult.getMemberEmail());
+            return "main";
+        } else {
+            // login 실패
+            return "login";
+        }
     }
 }
